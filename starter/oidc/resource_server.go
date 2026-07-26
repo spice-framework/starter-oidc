@@ -158,8 +158,25 @@ func (server *ResourceServer) Authenticate(
 	return principal, nil
 }
 
-// Middleware constructs bearer authentication middleware.
+// Middleware constructs bearer authentication middleware that requires a
+// verified token on every request.
 func (server *ResourceServer) Middleware(
+	onWriteFailure security.WriteFailure,
+) (web.Middleware, error) {
+	return server.middleware(true, onWriteFailure)
+}
+
+// OptionalMiddleware authenticates a presented bearer token while allowing a
+// request without credentials to continue without a principal. Malformed or
+// invalid presented credentials still fail with a safe 401 response.
+func (server *ResourceServer) OptionalMiddleware(
+	onWriteFailure security.WriteFailure,
+) (web.Middleware, error) {
+	return server.middleware(false, onWriteFailure)
+}
+
+func (server *ResourceServer) middleware(
+	required bool,
 	onWriteFailure security.WriteFailure,
 ) (web.Middleware, error) {
 	if server == nil || server.verifier == nil {
@@ -170,7 +187,12 @@ func (server *ResourceServer) Middleware(
 			return nil
 		}
 		return http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
-			rawToken, reason := bearerToken(request.Header.Values("Authorization"))
+			authorization := request.Header.Values("Authorization")
+			if !required && len(authorization) == 0 {
+				next.ServeHTTP(writer, request)
+				return
+			}
+			rawToken, reason := bearerToken(authorization)
 			if reason != ReasonAllowed {
 				server.observeDeniedRequest(request.Context(), reason)
 				writeAuthenticationError(writer, request, reason, onWriteFailure)

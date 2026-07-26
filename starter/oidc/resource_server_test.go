@@ -185,6 +185,78 @@ func TestMiddlewareAuthenticatesBearerRequests(t *testing.T) {
 	}
 }
 
+func TestOptionalMiddlewareAuthenticatesOnlyPresentedCredentials(t *testing.T) {
+	t.Parallel()
+	key := newSigningKey(t)
+	var decisions []Decision
+	server := newTestResourceServer(
+		t,
+		key,
+		testOptions(),
+		func(_ context.Context, decision Decision) {
+			decisions = append(decisions, decision)
+		},
+	)
+	middleware, err := server.OptionalMiddleware(nil)
+	if err != nil {
+		t.Fatalf("OptionalMiddleware() error = %v", err)
+	}
+	var authenticated []bool
+	handler := middleware(http.HandlerFunc(func(
+		writer http.ResponseWriter,
+		request *http.Request,
+	) {
+		_, found := security.PrincipalFromContext(request.Context())
+		authenticated = append(authenticated, found)
+		writer.WriteHeader(http.StatusNoContent)
+	}))
+
+	anonymous := httptest.NewRecorder()
+	handler.ServeHTTP(
+		anonymous,
+		httptest.NewRequest(http.MethodGet, "/public", nil),
+	)
+	if anonymous.Code != http.StatusNoContent {
+		t.Fatalf("anonymous status = %d", anonymous.Code)
+	}
+
+	rawToken := signedToken(t, key, tokenClaims(nil))
+	verifiedRequest := httptest.NewRequest(http.MethodGet, "/protected", nil)
+	verifiedRequest.Header.Set("Authorization", "Bearer "+rawToken)
+	verified := httptest.NewRecorder()
+	handler.ServeHTTP(verified, verifiedRequest)
+	if verified.Code != http.StatusNoContent {
+		t.Fatalf("verified status = %d", verified.Code)
+	}
+
+	malformedRequest := httptest.NewRequest(http.MethodGet, "/public", nil)
+	malformedRequest.Header.Set("Authorization", "Basic secret")
+	malformed := httptest.NewRecorder()
+	handler.ServeHTTP(malformed, malformedRequest)
+	if malformed.Code != http.StatusUnauthorized ||
+		malformed.Header().Get("WWW-Authenticate") !=
+			`Bearer error="invalid_token"` {
+		t.Fatalf(
+			"malformed response = %d challenge=%q",
+			malformed.Code,
+			malformed.Header().Get("WWW-Authenticate"),
+		)
+	}
+	if !slices.Equal(authenticated, []bool{false, true}) {
+		t.Fatalf("authenticated calls = %v", authenticated)
+	}
+	if len(decisions) != 2 ||
+		!decisions[0].Allowed ||
+		decisions[0].Reason != ReasonAllowed ||
+		decisions[1].Allowed ||
+		decisions[1].Reason != ReasonMalformed {
+		t.Fatalf("decisions = %#v", decisions)
+	}
+	if middleware(nil) != nil {
+		t.Fatal("OptionalMiddleware(nil) returned a handler")
+	}
+}
+
 func TestMiddlewareReportsWriteFailure(t *testing.T) {
 	t.Parallel()
 	server := newTestResourceServer(t, newSigningKey(t), testOptions())
@@ -244,6 +316,9 @@ func TestResourceServerValidation(t *testing.T) {
 	}
 	if _, err := (*ResourceServer)(nil).Middleware(nil); err == nil {
 		t.Fatal("nil Middleware() error = nil")
+	}
+	if _, err := (*ResourceServer)(nil).OptionalMiddleware(nil); err == nil {
+		t.Fatal("nil OptionalMiddleware() error = nil")
 	}
 	if authenticationReason(errors.New("other")) != ReasonInvalid {
 		t.Fatal("authenticationReason(other) changed")
