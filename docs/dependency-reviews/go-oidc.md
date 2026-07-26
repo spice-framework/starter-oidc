@@ -9,8 +9,8 @@
 - Security: the adapter never exposes skip-issuer, skip-audience, skip-expiry,
   or skip-signature switches. RFC 9068 token typing prevents ID-token
   substitution. The reachable graph remains subject to gosec and govulncheck.
-- Cancellation: verification accepts the request context. Remote key-set
-  transport and timeout ownership remain explicit caller responsibilities.
+- Cancellation: verification accepts the request context. Explicit discovery
+  requires a timed caller-owned client, HTTPS, no redirects, and bounded bodies.
 - Observability: decisions use bounded reason classes and never contain raw
   tokens, subjects, upstream errors, roles, or scopes.
 - Configuration: exact issuer, audience, claim names, algorithm allowlist, and
