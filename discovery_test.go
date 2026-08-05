@@ -10,6 +10,7 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"strings"
+	"sync"
 	"testing"
 	"time"
 )
@@ -54,6 +55,17 @@ func TestDiscoverVerifiesWithBoundedCallerClient(t *testing.T) {
 	if err != nil || principal.Subject() != "subject-1" {
 		t.Fatalf("Authenticate(discovered) = %#v, %v", principal, err)
 	}
+	_, err = server.Authenticate(
+		context.Background(),
+		signedToken(t, key, tokenClaims(map[string]any{
+			"iss": issuer,
+			"aud": "wrong-audience",
+		})),
+	)
+	authenticationErr, ok := errors.AsType[*AuthenticationError](err)
+	if !ok || authenticationErr.Reason != ReasonInvalid {
+		t.Fatalf("Authenticate(wrong audience) error = %#v", err)
+	}
 }
 
 func TestDiscoverRejectsUnsafeTransportAndMetadata(t *testing.T) {
@@ -94,6 +106,123 @@ func TestDiscoverHonorsCancellation(t *testing.T) {
 	cancel()
 	if _, err := Discover(ctx, &http.Client{Timeout: time.Second}, testOptions()); err == nil {
 		t.Fatal("Discover(canceled context) error = nil")
+	}
+}
+
+func TestDiscoverCancelsInFlightTLSRequest(t *testing.T) {
+	t.Parallel()
+
+	requestStarted := make(chan struct{})
+	upstream := httptest.NewTLSServer(http.HandlerFunc(func(
+		_ http.ResponseWriter,
+		request *http.Request,
+	) {
+		close(requestStarted)
+		<-request.Context().Done()
+	}))
+	defer upstream.Close()
+	client := upstream.Client()
+	client.Timeout = 2 * time.Second
+	ctx, cancel := context.WithCancel(context.Background())
+	result := make(chan error, 1)
+	go func() {
+		_, err := Discover(ctx, client, Options{
+			Issuer:   upstream.URL,
+			Audience: testAudience,
+		})
+		result <- err
+	}()
+	select {
+	case <-requestStarted:
+		cancel()
+	case <-time.After(2 * time.Second):
+		cancel()
+		t.Fatal("discovery request did not start")
+	}
+	select {
+	case err := <-result:
+		if !errors.Is(err, context.Canceled) {
+			t.Fatalf("Discover(canceled request) error = %v", err)
+		}
+	case <-time.After(2 * time.Second):
+		t.Fatal("Discover did not return after cancellation")
+	}
+}
+
+func TestAuthenticateCancelsWhileJWKSRequestIsInFlight(t *testing.T) {
+	t.Parallel()
+
+	key := newSigningKey(t)
+	requestStarted := make(chan struct{})
+	releaseRequest := make(chan struct{})
+	requestFinished := make(chan struct{})
+	var startedOnce sync.Once
+	var issuer string
+	upstream := httptest.NewTLSServer(http.HandlerFunc(func(
+		writer http.ResponseWriter,
+		request *http.Request,
+	) {
+		writer.Header().Set("Content-Type", "application/json")
+		switch request.URL.Path {
+		case "/.well-known/openid-configuration":
+			writeDiscoveryJSON(t, writer, map[string]any{
+				"issuer":                                issuer,
+				"jwks_uri":                              issuer + "/keys",
+				"id_token_signing_alg_values_supported": []string{"RS256"},
+			})
+		case "/keys":
+			startedOnce.Do(func() { close(requestStarted) })
+			<-releaseRequest
+			writeDiscoveryJSON(t, writer, testJWKSet(key.N, key.E))
+			close(requestFinished)
+		default:
+			http.NotFound(writer, request)
+		}
+	}))
+	defer upstream.Close()
+	issuer = upstream.URL
+	client := upstream.Client()
+	client.Timeout = 2 * time.Second
+	server, err := Discover(context.Background(), client, Options{
+		Issuer:   issuer,
+		Audience: testAudience,
+	})
+	if err != nil {
+		t.Fatalf("Discover() error = %v", err)
+	}
+	ctx, cancel := context.WithCancel(context.Background())
+	result := make(chan error, 1)
+	rawToken := signedToken(t, key, tokenClaims(map[string]any{"iss": issuer}))
+	go func() {
+		_, authenticateErr := server.Authenticate(
+			ctx,
+			rawToken,
+		)
+		result <- authenticateErr
+	}()
+	select {
+	case <-requestStarted:
+		cancel()
+	case <-time.After(2 * time.Second):
+		cancel()
+		close(releaseRequest)
+		t.Fatal("JWKS request did not start")
+	}
+	select {
+	case err = <-result:
+		authenticationErr, ok := errors.AsType[*AuthenticationError](err)
+		if !ok || authenticationErr.Reason != ReasonInvalid {
+			t.Fatalf("Authenticate(canceled JWKS) error = %#v", err)
+		}
+	case <-time.After(time.Second):
+		close(releaseRequest)
+		t.Fatal("Authenticate did not return after cancellation")
+	}
+	close(releaseRequest)
+	select {
+	case <-requestFinished:
+	case <-time.After(2 * time.Second):
+		t.Fatal("bounded JWKS request did not finish")
 	}
 }
 

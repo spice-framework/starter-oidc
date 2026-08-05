@@ -1,0 +1,21 @@
+# github.com/coreos/go-oidc/v3 v3.20.0
+## explicit; go 1.25.0
+github.com/coreos/go-oidc/v3/oidc
+# github.com/go-jose/go-jose/v4 v4.1.4
+## explicit; go 1.24.0
+github.com/go-jose/go-jose/v4
+github.com/go-jose/go-jose/v4/cipher
+github.com/go-jose/go-jose/v4/json
+# github.com/spice-framework/spice v0.0.0-20260805185924-ee45e0aa386e
+## explicit; go 1.26.0
+github.com/spice-framework/spice/annotation
+github.com/spice-framework/spice/annotation/sdk/starter
+github.com/spice-framework/spice/conversion
+github.com/spice-framework/spice/expression
+github.com/spice-framework/spice/security
+github.com/spice-framework/spice/validation
+github.com/spice-framework/spice/web
+# golang.org/x/oauth2 v0.36.0
+## explicit; go 1.25.0
+golang.org/x/oauth2
+golang.org/x/oauth2/internal

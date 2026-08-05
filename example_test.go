@@ -8,7 +8,7 @@ import (
 
 	coreoidc "github.com/coreos/go-oidc/v3/oidc"
 
-	spiceoidc "github.com/spice-framework/spice/starter/oidc"
+	spiceoidc "github.com/spice-framework/starter-oidc"
 )
 
 func ExampleNewResourceServer() {
