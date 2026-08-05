@@ -20,8 +20,8 @@ import (
 
 	coreoidc "github.com/coreos/go-oidc/v3/oidc"
 
-	"github.com/StevenBuglione/spice/security"
-	"github.com/StevenBuglione/spice/web"
+	"github.com/spice-framework/spice/security"
+	"github.com/spice-framework/spice/web"
 )
 
 const (
