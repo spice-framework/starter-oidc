@@ -22,9 +22,10 @@
   verifier.
 - Transitive scope: `go-jose/v4` and `golang.org/x/oauth2`; no provider SDK,
   session store, reverse proxy, browser flow, or server framework is adopted.
-- Spice compatibility: the development module pins and verifies the exact core
-  commit listed in `docs/support.md`; manifest compatibility fails closed on a
-  different Spice starter API.
+- Spice compatibility: the module selects the provisional minimum. The strict
+  repository compatibility manifest and isolated CI matrix verify distinct
+  minimum and current revisions with exact MVS selection; the starter manifest
+  independently requires the exact Spice starter API.
 
 Primary references:
 

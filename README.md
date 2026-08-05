@@ -35,7 +35,10 @@ go get github.com/spice-framework/starter-oidc@latest
 ```
 
 During preview development, applications should pin the exact compatible
-commit recorded in [support metadata](docs/support.md).
+revision recorded in [support metadata](docs/support.md). The strict
+[`spice-compatibility.json`](spice-compatibility.json) contract declares
+distinct minimum and current Spice revisions; no public runtime compatibility
+API or hidden version selection is invented.
 
 ## Verify
 
@@ -44,6 +47,7 @@ Go 1.26.5 is mandatory:
 ```text
 make check
 make acceptance
+make compatibility
 make verify
 ```
 
@@ -55,7 +59,9 @@ identity provider.
 
 The complete verifier checks formatting, module/vendor reproducibility, vet,
 allowlisted lint and nil safety, gosec, govulncheck, shuffled race tests, at
-least 85% product coverage, and offline vendor builds.
+least 85% product coverage, strict minimum/current core compatibility, and
+offline vendor builds. Compatibility runs through isolated modfiles, requires
+exact MVS selection, and proves the repository remains byte-for-byte unchanged.
 
 See [the dependency review](docs/dependency-review.md) and
 [support contract](docs/support.md) before production adoption.

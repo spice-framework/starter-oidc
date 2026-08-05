@@ -3,8 +3,9 @@
 | Contract | Current development support |
 |---|---|
 | Go | Exactly 1.26.5 for development and release verification |
-| Spice | `v0.0.0-20260805185924-ee45e0aa386e` |
-| Spice starter API | Exact `spice.starter/v1`; mismatches fail closed |
+| Minimum Spice | `v0.0.0-20260805175412-383c17744300` |
+| Current Spice | `v0.0.0-20260805194120-5eb20b5026e9` |
+| Spice starter API | Exact `v1alpha1`; mismatches fail closed |
 | go-oidc | `github.com/coreos/go-oidc/v3` v3.20.0 |
 | OIDC role | JWT resource server; authorization-code/browser login is not included |
 | Operating systems | Windows, Linux, and macOS |
@@ -12,8 +13,10 @@
 | Transport | HTTPS-only metadata and JWKS, no redirects, timed caller-owned client |
 | Token contract | RFC 9068 `at+jwt`, exact issuer and audience, signature and expiry required |
 
-The first preview tag will define the minimum supported Spice version. Until
-then, development commits intentionally declare one exact compatible Spice
-commit and fail closed outside that tested combination. Future releases will
-test both the published minimum and current supported Spice lines before
-raising that floor.
+[`spice-compatibility.json`](../spice-compatibility.json) is the sole preview
+compatibility boundary. The committed module selects its provisional minimum;
+the current value is a forward-compatibility endpoint, not an unbounded runtime
+dependency. The repository-owned compatibility verifier resolves each boundary
+through an isolated alternate modfile, requires exact MVS selection, runs vet
+and shuffled race tests for every product package with `GOPROXY=off`, and hashes
+the repository before and after to prove source, module, and vendor immutability.
