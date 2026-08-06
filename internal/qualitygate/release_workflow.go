@@ -7,7 +7,7 @@ import (
 	"strings"
 )
 
-const releaseWorkflowRevision = "f8fe9ec3cedd17f8bec4bf3d40f6640902774124"
+const releaseWorkflowRevision = "f436da76e19f26bb359e6173e4e16ba6ce53478d"
 
 func checkReleaseWorkflow(root string) error {
 	path := filepath.Join(root, ".github", "workflows", "release.yml")
