@@ -12,13 +12,11 @@ sizes, redirect refusal, and secret-safe diagnostics and observations. There
 must be no global verifier, environment lookup, hidden dependency download, or
 switch that disables signature, issuer, audience, or expiry checks.
 
-Release-parity work must preserve the exact `spice-dev` tool version authorized
-by the root `go.mod`, invoke its full package path, and run both central and
-retained rehearsals with workspace and network resolution disabled in vendor
-mode. The protected central workflow is the production path once its user-owned
-key, reviewed public anchor, and release environments are configured. The
-retained repository builder remains only a parity oracle; unsigned parity must
-never manufacture signatures or key material.
+Release-rehearsal work must preserve the exact `spice-dev` tool version
+authorized by the root `go.mod`, invoke its full package path, and render the
+same inert plan twice with workspace and network resolution disabled in vendor
+mode. The protected central workflow is the sole production builder. An
+unsigned rehearsal must never manufacture signatures or key material.
 
 Add positive and failure-path tests, update public documentation, use focused
 checks while iterating, run `make verify` once on the exact final tree, and push

@@ -9,7 +9,7 @@
 | go-oidc | `github.com/coreos/go-oidc/v3` v3.20.0 |
 | Release signer | `github.com/spice-framework/development/cmd/spice-dev` at `v0.0.0-20260806132124-4c308d1b9fda` |
 | Independent verifier | `github.com/spice-framework/toolchain/cmd/spice-library-release-verify` at `v0.0.0-20260806133530-71211498297c` |
-| Public trust anchor | [`security/release/ed25519-public.pem`](../security/release/ed25519-public.pem), SHA-256 `9a7056c4df70347c2c0626c14bc23c93c9af2195640718a03edc1961fe6a4252` |
+| Public trust anchor | [`security/release/ed25519-public.pem`](../security/release/ed25519-public.pem), DER SHA-256 `3e2db973565bc970e30418fc3e343893d8d941f88a7dba82d8c6a2b425216c95` |
 | OIDC role | JWT resource server; authorization-code/browser login is not included |
 | Operating systems | Windows, Linux, and macOS |
 | Architectures | amd64 and arm64 compilation through the public core API |
@@ -28,9 +28,8 @@ Release artifacts are produced only from an exact tagged commit under the
 contract in [`releasing.md`](releasing.md). A compromised or missing signing
 secret fails a production release; it never falls back to unsigned output.
 The pinned central signer and independent verifier are the protected production
-path. Windows and Linux CI still compare the central renderer with the retained
-builder under vendor-only offline resolution; the retained command is a parity
-oracle only.
+path. Windows and Linux CI render the same inert central plan twice under
+vendor-only offline resolution and require byte-identical unsigned artifacts.
 
 The committed public trust anchor is reviewed verification material. Its
 fingerprint is the SHA-256 digest of the DER SubjectPublicKeyInfo bytes. The
