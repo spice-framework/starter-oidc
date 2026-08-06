@@ -3,11 +3,12 @@
 | Contract | Current development support |
 |---|---|
 | Go | Exactly 1.26.5 for development and release verification |
-| Minimum Spice | `v0.0.0-20260805175412-383c17744300` |
-| Current Spice | `v0.0.0-20260805222830-a2ecd56df246` |
+| Minimum Spice | `v0.0.0-20260805222830-a2ecd56df246` |
+| Current Spice | `v0.0.0-20260806053623-2ec6f862073f` |
 | Spice starter API | Exact `v1alpha1`; mismatches fail closed |
 | go-oidc | `github.com/coreos/go-oidc/v3` v3.20.0 |
-| Release parity tool | `github.com/spice-framework/development/cmd/spice-dev` at `v0.0.0-20260806034648-1856466df09d` |
+| Release signer | `github.com/spice-framework/development/cmd/spice-dev` at `v0.0.0-20260806052122-9025218a91c0` |
+| Independent verifier | `github.com/spice-framework/toolchain/cmd/spice-library-release-verify` at `v0.0.0-20260806054457-a83d9b58034c` |
 | OIDC role | JWT resource server; authorization-code/browser login is not included |
 | Operating systems | Windows, Linux, and macOS |
 | Architectures | amd64 and arm64 compilation through the public core API |
