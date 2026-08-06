@@ -45,22 +45,45 @@ the newly created `dist` files. The workflow never prints the key. Creating or
 rotating that repository secret and pushing a release tag are separate human
 release-authority actions; no development task should manufacture either.
 
-## Unsigned rehearsal
+## Unsigned dual-builder rehearsal
 
-An explicit rehearsal exercises the exact same source archive, SBOM, and
-checksum pipeline without requiring a clean checkout or matching tag:
+The application module authorizes an exact central renderer through its
+`go.mod` tool directive. `make release-parity` runs that fully qualified tool
+and the retained repository builder twice each with `GOWORK=off`,
+`GOPROXY=off`, `GOTOOLCHAIN=local`, and `GOFLAGS=-mod=vendor`. It first asks the
+central tool for a read-only plan, then renders the plan without resolving an
+ambient workspace or downloading a module.
+
+The central renderer is the migration candidate. The retained repository
+builder remains both the parity oracle and the production signer:
 
 ```text
-go run ./cmd/starter-oidc-release \
-  -rehearsal \
-  -version=v0.0.0-rehearsal \
-  -output=dist-rehearsal
+make release-parity
 ```
 
-Rehearsals are always unsigned and always archive `HEAD`, never working-tree
-contents. Passing a signing key together with `-rehearsal` is rejected.
-`make verify-release` runs two rehearsals and compares every byte after the
-complete repository verification contract.
+Both rehearsals are unsigned and always archive `HEAD`, never working-tree
+contents. Their source archives must be byte-identical, each builder must be
+byte-deterministic across two runs, both checksum files must verify their own
+archive and SBOM, and neither output may contain a signature or public key.
+
+The SBOMs must be semantically identical except for these intentional builder
+provenance fields:
+
+- document name (`starter-oidc VERSION` centrally and
+  `Spice OIDC starter VERSION` in the retained builder);
+- document namespace shape (the central renderer includes `spdx/v1/`);
+- organization and tool creators identifying the actual renderer.
+
+Their checksum files consequently differ only in the SBOM digest; the source
+archive checksum is identical. Package facts, relationships, creation time,
+SPDX contract, and every other decoded field must match exactly. The parity
+gate fails closed on any extra artifact, dependency drift, malformed checksum,
+or undocumented SBOM difference.
+
+`make verify-release` executes this dual-builder rehearsal after the complete
+repository verification contract. The tag workflow and production ceremony
+above deliberately continue to invoke `cmd/starter-oidc-release` and emit its
+signed artifacts until signing authority is migrated in a separate review.
 
 ## Consumer verification
 

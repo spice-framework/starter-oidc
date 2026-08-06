@@ -4,9 +4,10 @@
 |---|---|
 | Go | Exactly 1.26.5 for development and release verification |
 | Minimum Spice | `v0.0.0-20260805175412-383c17744300` |
-| Current Spice | `v0.0.0-20260805194120-5eb20b5026e9` |
+| Current Spice | `v0.0.0-20260805222830-a2ecd56df246` |
 | Spice starter API | Exact `v1alpha1`; mismatches fail closed |
 | go-oidc | `github.com/coreos/go-oidc/v3` v3.20.0 |
+| Release parity tool | `github.com/spice-framework/development/cmd/spice-dev` at `v0.0.0-20260806034648-1856466df09d` |
 | OIDC role | JWT resource server; authorization-code/browser login is not included |
 | Operating systems | Windows, Linux, and macOS |
 | Architectures | amd64 and arm64 compilation through the public core API |
@@ -24,3 +25,6 @@ the repository before and after to prove source, module, and vendor immutability
 Release artifacts are produced only from an exact tagged commit under the
 contract in [`releasing.md`](releasing.md). A compromised or missing signing
 secret fails a production release; it never falls back to unsigned output.
+The pinned central tool renders unsigned rehearsal candidates only. Windows
+and Linux CI compare them with the retained builder under vendor-only offline
+resolution; the retained command remains the signed production authority.

@@ -33,3 +33,27 @@ Primary references:
 - <https://github.com/coreos/go-oidc>
 - <https://openid.net/specs/openid-connect-core-1_0.html>
 - <https://www.rfc-editor.org/rfc/rfc9068.html>
+
+## Build-only dependency: Spice development release renderer
+
+- Decision: approved only as the repository-authorized release-parity tool.
+- Version: `github.com/spice-framework/development`
+  `v0.0.0-20260806034648-1856466df09d`.
+- Tool: `github.com/spice-framework/development/cmd/spice-dev` through the
+  standard Go `tool` directive; invocations always use the full package path.
+- License: Apache-2.0, with its notice retained in `vendor`.
+- Runtime scope: none. Product packages do not import the development module,
+  and released applications acquire no runtime dependency on it.
+- Dependency graph: the tool participates in normal Go minimal-version
+  selection. That build-time coupling is accepted and visible in `go.mod`,
+  `go.sum`, and `vendor/modules.txt`; no parallel tool registry is introduced.
+- Integrity and network behavior: the exact pseudo-version is pinned and
+  checksummed. Release parity runs with `GOWORK=off`, `GOPROXY=off`,
+  `GOTOOLCHAIN=local`, and `GOFLAGS=-mod=vendor`, so it cannot select an ambient
+  checkout, upgrade itself, or download dependencies.
+- Security: the native build tool is trusted repository code, reads the exact
+  committed Git graph, and writes only to a caller-supplied temporary output
+  directory. The rehearsal emits no signatures or signing material.
+- Maintenance: the retained local builder and production signing workflow stay
+  in place. A dual-builder gate detects central renderer regressions before any
+  future authority migration.

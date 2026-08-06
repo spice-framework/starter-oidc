@@ -48,6 +48,7 @@ Go 1.26.5 is mandatory:
 make check
 make acceptance
 make compatibility
+make release-parity
 make verify
 make verify-release
 ```
@@ -63,6 +64,11 @@ allowlisted lint and nil safety, gosec, govulncheck, shuffled race tests, at
 least 85% product coverage, strict minimum/current core compatibility, and
 offline vendor builds. Compatibility runs through isolated modfiles, requires
 exact MVS selection, and proves the repository remains byte-for-byte unchanged.
+Release parity runs the exact `spice-dev` tool authorized by `go.mod` and the
+retained repository builder twice each, entirely from `vendor` with network and
+workspace resolution disabled. It requires byte-identical source archives,
+semantically equivalent SBOMs, self-consistent checksums, and no rehearsal
+signatures on Windows and Linux.
 
 See [the dependency review](docs/dependency-review.md) and
 [support contract](docs/support.md) before production adoption.
@@ -75,3 +81,6 @@ an exact-commit source archive from exact Git objects, a committed-graph SPDX
 mode requires a clean checkout, exact tag, and protected signing key; an
 explicit unsigned rehearsal is available for local proof. See
 [`docs/releasing.md`](docs/releasing.md) for the artifact and trust contract.
+The retained repository builder and signed production workflow remain the
+release authority while the centrally rendered unsigned candidate is held to
+the dual-builder parity contract.
