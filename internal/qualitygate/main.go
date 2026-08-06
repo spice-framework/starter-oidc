@@ -171,7 +171,10 @@ func checkIdentity(ctx context.Context, root string) error {
 			spiceModulePath, minimum, versions.Minimum,
 		)
 	}
-	return requireReleaseTool(ctx, root)
+	if err := requireReleaseTool(ctx, root); err != nil {
+		return err
+	}
+	return checkReleaseWorkflow(root)
 }
 
 type compatibilityVersions struct {

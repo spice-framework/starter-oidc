@@ -36,7 +36,8 @@ Primary references:
 
 ## Build-only dependencies: Spice release tools
 
-- Decision: approved only as the repository-authorized release-parity tool.
+- Decision: approved as the repository-authorized release signer, renderer,
+  and independent verifier.
 - Signer version: `github.com/spice-framework/development`
   `v0.0.0-20260806121906-963bb6676069`.
 - Signer tool: `github.com/spice-framework/development/cmd/spice-dev` through the
@@ -58,6 +59,6 @@ Primary references:
 - Security: the native build tool is trusted repository code, reads the exact
   committed Git graph, and writes only to a caller-supplied temporary output
   directory. The rehearsal emits no signatures or signing material.
-- Maintenance: the retained local builder and production signing workflow stay
-  in place. A dual-builder gate detects central renderer regressions before any
-  future authority migration.
+- Maintenance: the protected central workflow owns production. The retained
+  local builder remains only as the dual-builder parity oracle and is not
+  removed by this cutover.
