@@ -37,18 +37,21 @@ The retained repository builder is not part of production.
 This repository's reviewed public Ed25519 trust anchor is committed at
 `security/release/ed25519-public.pem`. Its SHA-256 fingerprint over the DER
 SubjectPublicKeyInfo bytes is
-`9a7056c4df70347c2c0626c14bc23c93c9af2195640718a03edc1961fe6a4252`.
-Store only the matching private key as `SPICE_LIBRARY_RELEASE_SIGNING_KEY` in
-the protected `release-signing` environment. Configure a separate protected
-`release-publish` environment for the write-capable final job. Both
-environments should require the repository's designated reviewers.
+`3e2db973565bc970e30418fc3e343893d8d941f88a7dba82d8c6a2b425216c95`.
+Store only the matching private key as the repository Actions secret
+`SPICE_LIBRARY_RELEASE_SIGNING_KEY`. Configure protected `release-signing` and
+`release-publish` environments for the signing approval and write-capable final
+job. Both environments should require the repository's designated reviewers.
 
 Do not create or push a release tag until the matching private signing secret
 and both protected environments are configured. Committing the public anchor
 does not assert that those controls, a tag, or a release exist. The caller
-forwards no secrets; the central signing job can read only the secret attached
-to its named environment. The workflow fails closed on a missing key, an
-anchor mismatch, a moved tag, or independent verification failure.
+forwards exactly one explicitly named signing secret; broad `secrets: inherit`
+forwarding is forbidden. The reusable workflow references that secret only in
+its protected `release-signing` job. Validation, planning, independent
+verification, and publishing cannot read it. The workflow fails closed on a
+missing key, an anchor mismatch, a moved tag, or independent verification
+failure.
 
 ## Unsigned dual-builder rehearsal
 

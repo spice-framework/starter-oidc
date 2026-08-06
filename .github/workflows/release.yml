@@ -12,6 +12,8 @@ jobs:
     name: Centrally verify, sign, and publish
     permissions:
       contents: write
-    uses: spice-framework/.github/.github/workflows/library-release.yml@f436da76e19f26bb359e6173e4e16ba6ce53478d
+    uses: spice-framework/.github/.github/workflows/library-release.yml@37dbac1ce9a616574f899afcb531f2097c71855c
+    secrets:
+      SPICE_LIBRARY_RELEASE_SIGNING_KEY: ${{ secrets.SPICE_LIBRARY_RELEASE_SIGNING_KEY }}
     with:
       module: github.com/spice-framework/starter-oidc
