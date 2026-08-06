@@ -7,7 +7,7 @@
 | Current Spice | `v0.0.0-20260806053623-2ec6f862073f` |
 | Spice starter API | Exact `v1alpha1`; mismatches fail closed |
 | go-oidc | `github.com/coreos/go-oidc/v3` v3.20.0 |
-| Release signer | `github.com/spice-framework/development/cmd/spice-dev` at `v0.0.0-20260806052122-9025218a91c0` |
+| Release signer | `github.com/spice-framework/development/cmd/spice-dev` at `v0.0.0-20260806121906-963bb6676069` |
 | Independent verifier | `github.com/spice-framework/toolchain/cmd/spice-library-release-verify` at `v0.0.0-20260806054457-a83d9b58034c` |
 | OIDC role | JWT resource server; authorization-code/browser login is not included |
 | Operating systems | Windows, Linux, and macOS |
