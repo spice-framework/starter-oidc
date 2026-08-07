@@ -1,5 +1,7 @@
 # Spice OIDC starter
 
+Unified documentation: [spiceframework.dev/integrations/oidc](https://spiceframework.dev/integrations/oidc/).
+
 `github.com/spice-framework/starter-oidc` is the independently versioned,
 opt-in OpenID Connect JWT resource-server integration for Spice. Importing
 Spice core alone never discovers an issuer or creates a verifier.
