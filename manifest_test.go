@@ -42,10 +42,10 @@ func TestManifestDeclaresStandaloneReviewedStarter(t *testing.T) {
 		}) {
 		t.Fatalf("dependencies = %#v", spec.Dependencies)
 	}
-	if err := manifest.Compatible(spicestarter.APIVersion, "go1.26.5"); err != nil {
+	if err := manifest.Compatible(spicestarter.APIVersion, "go1.26.6"); err != nil {
 		t.Fatalf("Compatible() error = %v", err)
 	}
-	if err := manifest.Compatible("spice.starter/v2", "go1.26.5"); err == nil {
+	if err := manifest.Compatible("spice.starter/v2", "go1.26.6"); err == nil {
 		t.Fatal("Compatible(mismatched Spice API) error = nil")
 	}
 	if err := manifest.Compatible(spicestarter.APIVersion, "go1.25.9"); err == nil {

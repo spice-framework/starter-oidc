@@ -44,7 +44,7 @@ API or hidden version selection is invented.
 
 ## Verify
 
-Go 1.26.5 is mandatory:
+Go 1.26.6 is mandatory:
 
 ```text
 make check

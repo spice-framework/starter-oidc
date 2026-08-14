@@ -1,0 +1,25 @@
+{
+  "schema": 1,
+  "kind": "starter",
+  "name": "oidc",
+  "module": "github.com/spice-framework/starter-oidc",
+  "spiceCompatibility": {
+    "minimum": "v0.1.0-preview.4.0.20260814014712-5f535e696300",
+    "current": "v0.1.0-preview.4.0.20260814014712-5f535e696300"
+  },
+  "capabilities": [
+    "security.oidc-resource-server"
+  ],
+  "autoConfigurationPackages": [
+    "github.com/spice-framework/starter-oidc"
+  ],
+  "compilerTools": [
+    "github.com/spice-framework/toolchain"
+  ],
+  "publicPackages": [
+    "github.com/spice-framework/starter-oidc"
+  ],
+  "documentation": [
+    "README.md"
+  ]
+}

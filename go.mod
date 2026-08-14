@@ -2,11 +2,11 @@ module github.com/spice-framework/starter-oidc
 
 go 1.26.0
 
-toolchain go1.26.5
+toolchain go1.26.6
 
 require (
 	github.com/coreos/go-oidc/v3 v3.20.0
-	github.com/spice-framework/spice v0.0.0-20260805222830-a2ecd56df246
+	github.com/spice-framework/spice v0.1.0-preview.4.0.20260814014712-5f535e696300
 )
 
 require (

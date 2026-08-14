@@ -2,9 +2,9 @@
 
 | Contract | Current development support |
 |---|---|
-| Go | Exactly 1.26.5 for development and release verification |
-| Minimum Spice | `v0.0.0-20260805222830-a2ecd56df246` |
-| Current Spice | `v0.0.0-20260806053623-2ec6f862073f` |
+| Go | Exactly 1.26.6 for development and release verification |
+| Minimum Spice | `v0.1.0-preview.4.0.20260814014712-5f535e696300` |
+| Current Spice | `v0.1.0-preview.4.0.20260814014712-5f535e696300` |
 | Spice starter API | Exact `v1alpha1`; mismatches fail closed |
 | go-oidc | `github.com/coreos/go-oidc/v3` v3.20.0 |
 | Release signer | `github.com/spice-framework/development/cmd/spice-dev` at `v0.0.0-20260806132124-4c308d1b9fda` |

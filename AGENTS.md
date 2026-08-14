@@ -5,7 +5,7 @@ integration for Spice. Work directly on local `main` in bounded commits. Fetch
 before editing and immediately before pushing; never overwrite unexpected
 remote work.
 
-Go 1.26.5 is mandatory. Every product change must preserve exact issuer and
+Go 1.26.6 is mandatory. Every product change must preserve exact issuer and
 audience verification, access-token typing, caller-owned contexts and HTTP
 clients, HTTPS-only discovery and JWKS retrieval, bounded response and token
 sizes, redirect refusal, and secret-safe diagnostics and observations. There
